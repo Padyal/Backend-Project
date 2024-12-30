@@ -3,7 +3,7 @@
         statusCod,
         message='Something went wrong',
         errors=[],
-        statck=""
+        stack=""
     ){
         super(message)
         this.statusCod = statusCod

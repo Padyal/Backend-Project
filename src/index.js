@@ -1,15 +1,19 @@
 // require('dotenv').config({path:'./env'})   ----- ok ok version 
 
+import express from 'express'
+const PORT = process.env.PORT||9000
+import {app} from './app.js'
 import dotenv from 'dotenv'
 import connetDB from './db/index.js'
+
 dotenv.config({
     path:'./env'
 })
 
 connetDB()
 .then(()=>{
-    app.listen(process.env.PORT||8000 , ()=>{
-        console.log(`Server is on port : ${process.env.PORT}`)
+    app.listen(PORT , ()=>{
+        console.log(`Server is on port : ${PORT}`)
     })
     app.on('error',(error)=>{
         console.log('Error occure in app :',error);

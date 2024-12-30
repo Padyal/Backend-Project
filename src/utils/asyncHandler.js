@@ -1,9 +1,7 @@
-//async db call handler using promises
+//async db call handler using promises //helper 
 const asyncHandler = (requestHandler) => {
-    (req, res, next) => {
-        Promise.resolve(requestHandler(req, res, next)).catch((error) => {
-            next(error)
-        })
+    return (req, res, next) => {
+        Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err))
     }
 }
 export { asyncHandler }

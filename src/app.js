@@ -9,10 +9,17 @@ app.use(cors({
     credentials:true,
 })) //<-use for all middle wares
 
-//configuration
-app.use(express.json({limit:"20kb"}))
+//configuration , middlewares
+app.use(express.json({limit:"16kb"}))
 app.use(express.urlencoded({extended:true,limit:'20kb'}))
 app.use(express.static('public'))
-app.use(express.cookieParser())
+app.use(cookieParser())
+
+//routes import
+import userRouter from './routes/user.route.js' 
+
+//routes declaration
+//url will be like //https://localhost:8000/api/v1/users
+app.use("/api/v1/users",userRouter)
 
 export {app}
