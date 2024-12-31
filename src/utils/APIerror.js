@@ -18,6 +18,6 @@
             Error.captureStackTrace(this,this.constructor)
         }
     }
- }
+}
 
 export {ApiError}
