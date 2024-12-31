@@ -2,8 +2,10 @@ import {asyncHandler} from '../utils/asyncHandler.js'
 import {ApiError} from '../utils/APIerror.js'
 //user can directly access mongo db
 import {User} from '../models/user.model.js'
+import {uploadOnCloudinary} from '../utils/cloudinary.js'
+import {ApiResponse} from '../utils/ApiResponse.js'
 
-const registerUser = asyncHandler((req,res)=>{
+const registerUser = asyncHandler( async (req,res)=>{
     //step 1 : get user credentials from users
     //step 2 : validation of all input (!empty and correct format)
     //step 3 : check if user already exist(username and email)
@@ -44,6 +46,30 @@ const registerUser = asyncHandler((req,res)=>{
     if(localAvatarPath){
         throw new ApiError(400,'Avatar file is required')
     }
+    const avatar = await uploadOnCloudinary(localAvatarPath)
+    const coverImage = await uploadOnCloudinary(localCoverPath)
+
+    if(!avatar){
+        throw new ApiError(400,"Avatar is required")
+    }
+    const user = await User.create({
+        fullName,
+        avatar : avatar.url,
+        coverImage : coverImage?.url||"",
+        userName: userName.toLowerCase(),
+        email,
+        password,
+    })
+    const createdUser = await User.findById(user._id).select(
+        "-password -refreshToken"
+    )
+    if(!createdUser){
+        throw new ApiError(500,'Some went wrong while registration of new user')
+    }
+
+    return res.status(201).json(
+        new ApiResponse(200,createdUser,"User created sucessfully")
+    )
 })
 
 export {registerUser}
