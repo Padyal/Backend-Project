@@ -29,7 +29,7 @@ const userSchema = new Schema({
         required:true,
     },
     coverimage:{
-        type:String,
+        type:String, //cloudinary url service
     },
     watchHistory:[
         {
@@ -46,13 +46,18 @@ const userSchema = new Schema({
     }
 },{timeseries:true});
 
-userSchema.pre("save", async function(next){
-    if(!this.isModified('password')) return next()
 
+//pre :-this hook runs just before saving data
+userSchema.pre("save", async function(next){
+    //we check this because we only want to update password when user password is changes and not on any other updates such as avatar pic etc
+    if(this.isModified('password')){
     this.password = await bcrypt.hash(this.password,10)
+    }
     next()
 })
 
+
+//userSchema methods can be used later on for fucntionality
 userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password,this.password)
 }
