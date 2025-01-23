@@ -20,6 +20,7 @@ import userRouter from './routes/user.route.js'
 
 //routes declaration
 //url will be like //https://localhost:8000/api/v1/users
+//we will use this router that we wrote in other file as a middleware therefore we need app.use()
 app.use("/api/v1/users",userRouter)
 
 export {app}

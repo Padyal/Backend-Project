@@ -1,7 +1,10 @@
 import { Router } from "express";
 import {registerUser} from '../controllers/user.controller.js'
+
+// we use multer to handle our files in a particular routes
 import {upload} from '../middlewares/multer.middleware.js'
 
+//function in express that helps bring modularity
 const router =  Router()
 
 //url will be like //https://localhost:8000/users/register
@@ -10,18 +13,15 @@ const router =  Router()
 //addition of multer middleware for file handling
 router.route("/register").post(
     upload.fields([
-        //avatar
         {
+            //name for this field will be same as it is in front end so remembering this is imp
             name:'avatar',
-            maxCount:1,
-        },
-        //coverimage
-        {
+            maxCount : 1
+        },{
             name:'coverImage',
             maxCount:1,
         }
-    ]),
-    registerUser
-)
+    ])   
+    ,registerUser)
 
 export default router

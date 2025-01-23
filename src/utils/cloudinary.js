@@ -1,6 +1,6 @@
 //cloudinary
 import { v2 as cloudinary } from "cloudinary";
-import fs from 'fs';
+import fs from 'fs'; 
 
 // Configure Cloudinary
 cloudinary.config({ 
@@ -14,6 +14,7 @@ const uploadOnCloudinary = async (localFilePath)=>{
         if(!localFilePath) return null;
         //if file path exist
         console.log(localFilePath)
+        
         const result = await cloudinary.uploader.upload(localFilePath,{resource_type:'auto'})
         // remove file from local server as its been uploaded on server
         console.log('File successfully uploaded in cloudinary and url is:',result.url)
