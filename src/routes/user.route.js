@@ -1,5 +1,7 @@
 import { Router } from "express";
-import {registerUser} from '../controllers/user.controller.js'
+import {registerUser,loginUser,logoutUser} from '../controllers/user.controller.js'
+import {verifyJWT} from '../middlewares/auth.middleware.js'
+
 
 // we use multer to handle our files in a particular routes
 import {upload} from '../middlewares/multer.middleware.js'
@@ -18,10 +20,15 @@ router.route("/register").post(
             name:'avatar',
             maxCount : 1
         },{
-            name:'coverImage',
+            name:'coverimage',
             maxCount:1,
         }
     ])   
     ,registerUser)
+
+router.route('/login').post(loginUser)
+
+//secured routes
+router.route('/logout').get(verifyJWT,logoutUser)
 
 export default router

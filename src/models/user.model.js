@@ -44,7 +44,7 @@ const userSchema = new Schema({
     refreshToken:{
         type:String,
     }
-},{timeseries:true});
+},{timestamps:true});
 
 
 //pre :-this hook runs just before saving data

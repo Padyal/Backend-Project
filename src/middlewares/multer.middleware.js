@@ -8,6 +8,6 @@ const storage = multer.diskStorage({
       cb(null, file.originalname)
     }
     //return local path of file
-  })
-  
+})
+
 export const upload = multer({ storage, })
