@@ -15,7 +15,7 @@ import {ApiError} from '../utils/APIerror.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
 import {User} from '../models/user.model.js'
 import jwt from 'jsonwebtoken'
-import {uploadOnCloudinary as cloudinary, uploadOnCloudinary} from '../utils/cloudinary.js'
+import {uploadOnCloudinary as cloudinary,deleteFromCloudinary} from '../utils/cloudinary.js'
 
 
 const generateAccessAndRefreshToken = async (userId)=>{
@@ -224,7 +224,7 @@ const updateAccountDetailsTextBased =  asyncHandler(async(req,res)=>{
     if(!fullname || !email){
         throw new ApiError('All fields are required')
     }
-    const user = User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user?._id,
         { 
             $set:{
@@ -248,6 +248,9 @@ const updateUserAvatar = asyncHandler(async (req,res)=>{
     if(!avatar.url){
         new ApiError(400,"Error while uploading on cloudinary during updating Avatar")
     }
+    
+    await deleteFromCloudinary(avatarLocalPath)
+
     const user = await User.findByIdAndUpdate(req.user._id,
         {
             $set:{
@@ -259,6 +262,7 @@ const updateUserAvatar = asyncHandler(async (req,res)=>{
     .status(200)
     .json(new ApiResponse(200,user,"Avatar updated successfully"))
 })
+
 const updateUserCoverImage = asyncHandler(async (req,res)=>{
     const coverimageLocalPath = req.file?.path
     if(!coverimageLocalPath){
@@ -279,4 +283,4 @@ const updateUserCoverImage = asyncHandler(async (req,res)=>{
     .status(200)
     .json(new ApiResponse(200,user,"CoverImage updated successfully"))
 })
-export {registerUser, loginUser , logoutUser , refreshAccessToken , changeCurrentPassword , getUser ,updateUserAvatar,updateUserCoverImage}
+export {registerUser, loginUser , logoutUser , refreshAccessToken , changeCurrentPassword , getUser ,updateUserAvatar,updateUserCoverImage,updateAccountDetailsTextBased}
