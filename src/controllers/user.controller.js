@@ -46,7 +46,7 @@ const registerUser = asyncHandler(async  (req,res)=>{
     if(username==='') {throw new ApiError(400,'username is required')}
     if(email==='') {throw new ApiError(400,'email is required')}
     if(password==='') {throw new ApiError(400,'password is required')}
-
+    
     // const exist = User.findOne({
     //     //we can use or operation in email or username
     //     $or:[{email},{username}]
@@ -199,6 +199,7 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
 
 const changeCurrentPassword = asyncHandler(async(req,res)=>{
     const {oldPassword,newPassword} = req.body
+    console.log(oldPassword,newPassword)
     // if(newPassword != confirmationPassword){
     //     throw new ApiError(400,"Confire and new password should be same")
     // }
@@ -246,7 +247,7 @@ const updateUserAvatar = asyncHandler(async (req,res)=>{
     if(!avatarLocalPath){
         new ApiError(400,"Avatar is required while updation")
     }
-    const avatar = await uploadOnCloudinary(avatarLocalPath)
+    const avatar = await cloudinary(avatarLocalPath)
     if(!avatar.url){
         new ApiError(400,"Error while uploading on cloudinary during updating Avatar")
     }
@@ -270,7 +271,7 @@ const updateUserCoverImage = asyncHandler(async (req,res)=>{
     if(!coverimageLocalPath){
         new ApiError(400,"CoverImage is required while updation")
     }
-    const coverimage = await uploadOnCloudinary(coverimageLocalPath)
+    const coverimage = await cloudinary(coverimageLocalPath)
     if(!coverimage.url){
         new ApiError(400,"Error while uploading on cloudinary during updating CoverImage")
     }
@@ -321,7 +322,7 @@ const getUserChannelProfile = asyncHandler(async (req,res)=>{
                     $size:"$subscribedTo"
                 },
                 isSubscribed:{
-                    $condition:{
+                    $cond:{
                         if:{$in:[req.user?._id,"$subscribers.subscriber"]},
                         then:true,
                         else:false
@@ -344,7 +345,7 @@ const getUserChannelProfile = asyncHandler(async (req,res)=>{
     console.log("aggregate pipeline returns this ")
     console.log(channel)
 
-    if(!channel?.lenght){
+    if(channel?.lenght===0){
         throw  new ApiError(404,"Channel does not exist!!")
     }
 
@@ -355,8 +356,6 @@ const getUserChannelProfile = asyncHandler(async (req,res)=>{
     )
 })
 
-
-
 const getWatchHistory = asyncHandler(async(req,res)=>{
     const user = await User.aggregate([
         {
@@ -365,14 +364,14 @@ const getWatchHistory = asyncHandler(async(req,res)=>{
             }
         },
         {
-            $lookUp:{
+            $lookup:{
                 from:"videos",
                 localField:"watchHistory",
                 foreignField:"_id",
                 as:"watchHistory",
                 pipeline:[
                     {
-                        $lookUp:{
+                        $lookup:{
                             from:"users",
                             localField:"owner",
                             foreignField:"_id",
@@ -399,7 +398,7 @@ const getWatchHistory = asyncHandler(async(req,res)=>{
             }
         }
     ])
-    return res.status(200).json(ApiResponse(200,user[0].watchHistory,"watch history fetched successfully"))
+    return res.status(200).json(new ApiResponse(200,user[0].watchHistory,"watch history fetched successfully"))
 })
 
 export {registerUser, loginUser , logoutUser , refreshAccessToken , changeCurrentPassword , getUser ,updateUserAvatar,updateUserCoverImage,updateAccountDetailsTextBased,getUserChannelProfile,getWatchHistory}
